@@ -1,0 +1,71 @@
+parameters:
+ - name: IS_PULL_REQUEST
+   type: string
+ - name: PACT_BROKER_BASE_URL
+   type: string
+   default: 'https://launch-pact-broker-dev-eastus-001.azurewebsites.net/'
+ - name: PACT_BROKER_PASSWORD
+   type: string
+   default: ''
+ - name: PACT_BROKER_USERNAME
+   type: string
+   default: ''
+ - name: PACTICIPANT
+   type: string
+ - name: BUILD_SOURCE_VERSION
+   type: string
+   default: '$(git rev-parse --short $BUILD_SOURCEVERSION)'
+ - name: BUILD_SOURCE_BRANCH
+   type: string
+   default: "$[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]"
+ - name: PR_APP_VERSION
+   type: string
+   default: '$(git rev-parse --short $(system.pullRequest.sourceCommitId))'
+ - name: PR_BRANCH
+   type: string
+   default: "$[replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '')]"
+
+  steps:
+- ${{ if eq(parameters.IS_PULL_REQUEST., 'true')}}
+  - task: Bash@3
+    displayName: 'Can I deploy'
+    inputs:
+      targetType: inline
+      script: >
+        echo 'pact-broker can I deploy'
+
+        docker run --rm  \
+         -e $PACT_BROKER_BASE_URL \
+         -e $PACT_BROKER_USERNAME \
+         -e $PACT_BROKER_PASSWORD \
+          pactfoundation/pact-cli:latest \
+          pact-broker can-i-deploy \
+          --pacticipant $PACTICIPANT \
+          --version  $PR_APP_VERSION \
+          --branch $PR_BRANCH \
+          --broker-base-url $PACT_BROKER_BASE_URL \
+          --broker-username $PACT_BROKER_USERNAME \
+          --broker-password $PACT_BROKER_PASSWORD \
+          --verbose true
+- ${{ else }}          
+  - task: Bash@3
+    displayName: 'Can I deploy'
+    inputs:
+      targetType: inline
+      script: >
+        echo 'pact-broker can I deploy'
+
+        docker run --rm  \
+         -e $PACT_BROKER_BASE_URL \
+         -e $PACT_BROKER_USERNAME \
+         -e $PACT_BROKER_PASSWORD \
+          pactfoundation/pact-cli:latest \
+          pact-broker can-i-deploy \
+          --pacticipant $PACTICIPANT \
+          --version  $BUILD_SOURCE_VERSION \
+          --branch $BUILD_SOURCE_BRANCH \
+          --broker-base-url $PACT_BROKER_BASE_URL \
+          --broker-username $PACT_BROKER_USERNAME \
+          --broker-password $PACT_BROKER_PASSWORD \
+          --verbose true
+...
