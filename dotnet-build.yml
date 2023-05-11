@@ -1,0 +1,20 @@
+parameters:
+ - name: project_base_directory
+   type: string
+   default: $(Build.SourcesDirectory)/$(Build.Repository.Name)
+ - name: project_name
+   type: string
+   default: ''
+
+steps:  
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: '{{ parameters.project_base_directory }}/test/**/*.csproj'
