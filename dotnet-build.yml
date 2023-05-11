@@ -6,7 +6,7 @@ parameters:
    type: string
    default: ''
 
-steps:  
+job:  
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
