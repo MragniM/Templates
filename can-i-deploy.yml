@@ -1,6 +1,7 @@
 parameters:
  - name: IS_PULL_REQUEST
    type: string
+   default: ''
  - name: PACT_BROKER_BASE_URL
    type: string
    default: 'https://launch-pact-broker-dev-eastus-001.azurewebsites.net/'
@@ -25,7 +26,7 @@ parameters:
    type: string
    default: "$[replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '')]"
 
-  steps:
+steps:
 - ${{ if eq(parameters.IS_PULL_REQUEST., 'true')}}
   - task: Bash@3
     displayName: 'Can I deploy'
